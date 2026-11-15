@@ -1,1 +1,37 @@
+name: List EC2 Instances using AWS OIDC
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  list-ec2:
+    runs-on: ubuntu-latest
 
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: arn:aws:iam::112736196475:role/githubactions-pipelines
+          aws-region: eu-north-1
+
+      - name: Verify AWS Identity
+        run: |
+          aws sts get-caller-identity
+
+      - name: List EC2 Instances
+        run: |
+          aws ec2 describe-instances \
+            --region eu-north-1 \
+            --query 'Reservations[*].Instances[*].[InstanceId,InstanceType,State.Name,PrivateIpAddress,PublicIpAddress]' \
+            --output table
+
+
+
+Replace <AWS_ACCOUNT_ID> with your 12-dig
