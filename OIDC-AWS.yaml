@@ -1,6 +1,5 @@
 name: List EC2 Instances using AWS OIDC
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
